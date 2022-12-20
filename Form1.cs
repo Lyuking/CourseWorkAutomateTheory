@@ -18,7 +18,7 @@ namespace CourseWork
             InitializeComponent();
             SetupTables();
         }
-
+        LexicalAnalizator lexicalAnalizator;
         private void SetupTables()
         {
             dataGridViewLexeme.Columns.Add("Word", "Слово");
@@ -57,8 +57,8 @@ namespace CourseWork
             ClearDataGridViews();
             try
             {
-                LexicalAnalizator analizator = new LexicalAnalizator(textBoxCode.Text);
-                FillDataInTables(analizator);
+                lexicalAnalizator = new LexicalAnalizator(textBoxCode.Text);
+                FillDataInTables(lexicalAnalizator);
             }
             catch (Exception ex)
             {
@@ -90,7 +90,7 @@ namespace CourseWork
             for (int i = 0; i < analizator.Literals.Count; i++)
                 dataGridViewLiterals.Rows.Add(analizator.Literals[i], i);
 
-            foreach (var item in analizator.tokens)
+            foreach (var item in analizator.Tokens)
                 dataGridViewTokens.Rows.Add(item.Item1, item.Item2);
         }
 
@@ -113,8 +113,336 @@ namespace CourseWork
 
             return System.IO.File.ReadAllText(path);           
         }
+
+        private void buttonSynytaxAnalys_Click(object sender, EventArgs e)
+        {
+            if (lexicalAnalizator != null)
+            {
+                SyntaxAnalizator syntaxAnalizator = new SyntaxAnalizator(lexicalAnalizator);
+                MessageBox.Show(syntaxAnalizator.StartAnalys().ToString());
+            }
+        }
     }
-    class LexicalAnalizator
+    public class SyntaxAnalizator
+    {
+        LexicalAnalizator lexicalAnalizator;
+        int lexemeCounter;
+        public SyntaxAnalizator(LexicalAnalizator lexicalAnalizator)
+        {
+            this.lexicalAnalizator = lexicalAnalizator;
+        }
+        public string getLexemeFromTokens(string lexemeTypeName, int num)
+        {
+            switch(lexemeTypeName)
+            {
+                case "Keyword":
+                    string s = lexicalAnalizator.KeyWords[num];
+                    return s; 
+                case "Variable":
+                    return "id";
+                case "Literal":
+                    return "lit";
+                case "Separator":
+                    string s2 = lexicalAnalizator.Separators[num];
+                    return s2;
+                default:
+                    return "undefined";
+            }
+        }
+        public bool StartAnalys()
+        {
+            lexemeCounter = 0;
+            return Progamma();
+        }
+        
+        bool Progamma()
+        {
+            if (getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter].Item1, lexicalAnalizator.Tokens[lexemeCounter].Item2) != "Public")
+            {
+                throw new SyntaxExceptions.PublicIsMissingException(getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter].Item1, lexicalAnalizator.Tokens[lexemeCounter].Item2));         
+            }
+            IncreaseLexemeCounter();
+            if (getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter].Item1, lexicalAnalizator.Tokens[lexemeCounter].Item2) != "Sub")
+            {
+                throw new SyntaxExceptions.SubIsMissingException(getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter].Item1, lexicalAnalizator.Tokens[lexemeCounter].Item2));
+            }
+            IncreaseLexemeCounter();
+            if (getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter].Item1, lexicalAnalizator.Tokens[lexemeCounter].Item2) != "Main")
+            {
+                throw new SyntaxExceptions.MainIsMissingException(getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter].Item1, lexicalAnalizator.Tokens[lexemeCounter].Item2));
+            }
+            IncreaseLexemeCounter();
+            if (getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter].Item1, lexicalAnalizator.Tokens[lexemeCounter].Item2) != "(")
+            {
+                throw new SyntaxExceptions.LeftBracketIsMissingException(getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter].Item1, lexicalAnalizator.Tokens[lexemeCounter].Item2));
+            }
+            IncreaseLexemeCounter();
+            if (getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter].Item1, lexicalAnalizator.Tokens[lexemeCounter].Item2) != ")")
+            {
+                throw new SyntaxExceptions.RightBracketIsMissingException(getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter].Item1, lexicalAnalizator.Tokens[lexemeCounter].Item2));
+            }
+            IncreaseLexemeCounter();
+            if (getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter].Item1, lexicalAnalizator.Tokens[lexemeCounter].Item2) != "\n")
+            {
+                throw new SyntaxExceptions.NewLineIsMissingException(getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter].Item1, lexicalAnalizator.Tokens[lexemeCounter].Item2));
+            }
+            IncreaseLexemeCounter();
+            SpisokOperatorov();          
+            if (getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter].Item1, lexicalAnalizator.Tokens[lexemeCounter].Item2) != "\n")
+            {
+                throw new SyntaxExceptions.NewLineIsMissingException(getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter].Item1, lexicalAnalizator.Tokens[lexemeCounter].Item2));
+            }
+            IncreaseLexemeCounter();
+            if (getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter].Item1, lexicalAnalizator.Tokens[lexemeCounter].Item2) != "EndSub")
+            {
+                throw new SyntaxExceptions.EndSubIsMissingException(getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter].Item1, lexicalAnalizator.Tokens[lexemeCounter].Item2));
+
+            }
+            return true;
+        }
+        private void IncreaseLexemeCounter()
+        {
+            ++lexemeCounter;
+        }
+
+        void SpisokOperatorov()
+        {
+            string currentLexeme = getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter].Item1, lexicalAnalizator.Tokens[lexemeCounter].Item2);
+            if (currentLexeme == "Dim" || currentLexeme == "for" || currentLexeme == "id")
+            {
+                TeloSpiska();
+                Fact1();
+            }
+            else
+            {
+                throw new SyntaxExceptions.DimForIdIsMissingException(getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter].Item1, lexicalAnalizator.Tokens[lexemeCounter].Item2));
+            }
+        }
+        void TeloSpiska()
+        {
+            string currentLexeme = getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter].Item1, lexicalAnalizator.Tokens[lexemeCounter].Item2);
+            if (currentLexeme == "Dim")
+            {
+                ObyavleniePeremennih();
+            }
+            else if (currentLexeme == "for")
+            {
+                CycleOper();
+            }
+            else if (currentLexeme == "id")
+            {
+                PrisvaivanieOper();
+            }
+            else
+            {
+                throw new SyntaxExceptions.DimForIdIsMissingException(getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter].Item1, lexicalAnalizator.Tokens[lexemeCounter].Item2));
+            }
+        }
+        void Fact1()
+        {
+            if (getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter].Item1, lexicalAnalizator.Tokens[lexemeCounter].Item2) != "\n")
+            {
+                throw new SyntaxExceptions.NewLineIsMissingException(getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter].Item1, lexicalAnalizator.Tokens[lexemeCounter].Item2));
+            }
+            if((getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter + 1].Item1, lexicalAnalizator.Tokens[lexemeCounter + 1].Item2) == "Dim" ||
+            getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter + 1].Item1, lexicalAnalizator.Tokens[lexemeCounter + 1].Item2) == "for" ||
+            getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter + 1].Item1, lexicalAnalizator.Tokens[lexemeCounter + 1].Item2) == "id"))
+            {
+                Rec1();
+            }
+            else if(getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter + 1].Item1, lexicalAnalizator.Tokens[lexemeCounter + 1].Item2) == "EndSub")
+            {
+                return;
+            }
+            else
+            {
+                throw new SyntaxExceptions.DimForIdEndSubIsMissingException(getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter +1 ].Item1, lexicalAnalizator.Tokens[lexemeCounter + 1].Item2));
+            }
+        }
+        void Rec1()
+        {
+            if (getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter].Item1, lexicalAnalizator.Tokens[lexemeCounter].Item2) == "\n")
+            {
+                IncreaseLexemeCounter();
+                TeloSpiska();
+                IncreaseLexemeCounter();
+                Fact1();
+            }
+            else
+            {
+                throw new SyntaxExceptions.NewLineIsMissingException(getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter].Item1, lexicalAnalizator.Tokens[lexemeCounter].Item2));
+            }
+        }
+        
+        void ObyavleniePeremennih()
+        {
+            if(getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter].Item1, lexicalAnalizator.Tokens[lexemeCounter].Item2) != "Dim")
+            {
+                new SyntaxExceptions.DimIsMissingException(getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter].Item1, lexicalAnalizator.Tokens[lexemeCounter].Item2));
+            }
+            IncreaseLexemeCounter();
+            SpisokPeremennih();
+            if(getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter].Item1, lexicalAnalizator.Tokens[lexemeCounter].Item2) != "as")
+            {
+                new SyntaxExceptions.AsIsMissingException(getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter].Item1, lexicalAnalizator.Tokens[lexemeCounter].Item2));
+            }
+            IncreaseLexemeCounter();
+            Type();
+            IncreaseLexemeCounter();
+            Initialization();
+        }
+        void Type()
+        {
+            string s = getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter].Item1, lexicalAnalizator.Tokens[lexemeCounter].Item2);
+            if (getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter].Item1, lexicalAnalizator.Tokens[lexemeCounter].Item2) == "integer")
+            {
+                return;
+            }
+            else if(getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter].Item1, lexicalAnalizator.Tokens[lexemeCounter].Item2) == "float")
+            {
+                return;
+            }
+            else if (getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter].Item1, lexicalAnalizator.Tokens[lexemeCounter].Item2) == "boolean")
+            {
+                return;
+            }
+            else
+            {
+                throw new SyntaxExceptions.TypeIsMissingException(getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter].Item1, lexicalAnalizator.Tokens[lexemeCounter].Item2));
+            }
+        }
+        void Initialization()
+        {
+            if(getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter].Item1, lexicalAnalizator.Tokens[lexemeCounter].Item2) == "=")
+            {
+                Operand();
+            }
+            else if(getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter].Item1, lexicalAnalizator.Tokens[lexemeCounter].Item2) == "\n")
+            {
+                return;
+            }
+            else
+            {
+                throw new SyntaxExceptions.EqualsOrNewLineIsMissingException(getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter].Item1, lexicalAnalizator.Tokens[lexemeCounter].Item2));
+            }
+        }
+        void SpisokPeremennih()
+        {
+            if(getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter].Item1, lexicalAnalizator.Tokens[lexemeCounter].Item2) != "id")
+            {
+                throw new SyntaxExceptions.IdIsMissingException(getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter].Item1, lexicalAnalizator.Tokens[lexemeCounter].Item2));
+
+            }
+            IncreaseLexemeCounter(); 
+            Fact2();
+
+        }
+        void Fact2()
+        {
+            if(getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter].Item1, lexicalAnalizator.Tokens[lexemeCounter].Item2) == ",")
+            {
+                Rec2();
+            }
+            else if(getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter].Item1, lexicalAnalizator.Tokens[lexemeCounter].Item2) == "as")
+            {
+                return;
+            }
+            else
+            {
+                throw new SyntaxExceptions.CommaOrAsIsMissingException(getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter].Item1, lexicalAnalizator.Tokens[lexemeCounter].Item2));
+            }
+        }
+        void Rec2()
+        {
+            if(getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter].Item1, lexicalAnalizator.Tokens[lexemeCounter].Item2) != ",")
+            {
+                throw new SyntaxExceptions.CommaIsMissingException(getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter].Item1, lexicalAnalizator.Tokens[lexemeCounter].Item2));
+            }
+            IncreaseLexemeCounter();
+            if(getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter].Item1, lexicalAnalizator.Tokens[lexemeCounter].Item2) != "id")
+            {
+                throw new SyntaxExceptions.IdIsMissingException(getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter].Item1, lexicalAnalizator.Tokens[lexemeCounter].Item2));
+            }
+            IncreaseLexemeCounter();
+            Fact2();
+
+        }
+        void CycleOper()
+        {
+            if(getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter].Item1, lexicalAnalizator.Tokens[lexemeCounter].Item2) != "for")
+            {
+                throw new SyntaxExceptions.ForIsMissingException(getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter].Item1, lexicalAnalizator.Tokens[lexemeCounter].Item2));
+            }
+            IncreaseLexemeCounter();
+            if(getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter].Item1, lexicalAnalizator.Tokens[lexemeCounter].Item2) != "id")
+            {
+                throw new SyntaxExceptions.IdIsMissingException(getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter].Item1, lexicalAnalizator.Tokens[lexemeCounter].Item2));
+            }
+            IncreaseLexemeCounter();
+            Operand();
+            if(getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter].Item1, lexicalAnalizator.Tokens[lexemeCounter].Item2) != "to")
+            {
+                throw new SyntaxExceptions.ToIsMissingException(getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter].Item1, lexicalAnalizator.Tokens[lexemeCounter].Item2));
+            }
+            IncreaseLexemeCounter();
+            Operand();
+            if(getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter].Item1, lexicalAnalizator.Tokens[lexemeCounter].Item2) != "\n")
+            {
+                throw new SyntaxExceptions.NewLineIsMissingException(getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter].Item1, lexicalAnalizator.Tokens[lexemeCounter].Item2));
+            }
+            IncreaseLexemeCounter();
+            SpisokOperatorov();
+            if(getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter].Item1, lexicalAnalizator.Tokens[lexemeCounter].Item2) != "\n")
+            {
+                throw new SyntaxExceptions.NewLineIsMissingException(getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter].Item1, lexicalAnalizator.Tokens[lexemeCounter].Item2));
+            }
+            IncreaseLexemeCounter();
+            if(getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter].Item1, lexicalAnalizator.Tokens[lexemeCounter].Item2) != "next")
+            {
+                throw new SyntaxExceptions.NextIsMissingException(getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter].Item1, lexicalAnalizator.Tokens[lexemeCounter].Item2));
+            }
+            IncreaseLexemeCounter();
+            if(getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter].Item1, lexicalAnalizator.Tokens[lexemeCounter].Item2) != "id")
+            {
+                throw new SyntaxExceptions.IdIsMissingException(getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter].Item1, lexicalAnalizator.Tokens[lexemeCounter].Item2));
+            }
+
+        }
+        void PrisvaivanieOper()
+        {
+            if(getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter].Item1, lexicalAnalizator.Tokens[lexemeCounter].Item2) != "id")
+            {
+                throw new SyntaxExceptions.IdIsMissingException(getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter].Item1, lexicalAnalizator.Tokens[lexemeCounter].Item2));
+            }
+            IncreaseLexemeCounter();
+            if(getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter].Item1, lexicalAnalizator.Tokens[lexemeCounter].Item2) != "=")
+            {
+                throw new SyntaxExceptions.EqualIsMissingException(getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter].Item1, lexicalAnalizator.Tokens[lexemeCounter].Item2));
+            }
+            IncreaseLexemeCounter();
+            if(getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter].Item1, lexicalAnalizator.Tokens[lexemeCounter].Item2) != "id") //expr
+            {
+                throw new SyntaxExceptions.IdIsMissingException(getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter].Item1, lexicalAnalizator.Tokens[lexemeCounter].Item2));
+            }
+            
+        }
+        void Operand()
+        {
+            if (getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter].Item1, lexicalAnalizator.Tokens[lexemeCounter].Item2) == "id")
+            { 
+                return;
+            }
+            else if (getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter].Item1, lexicalAnalizator.Tokens[lexemeCounter].Item2) == "lit")
+            {
+                return;
+            }
+            else
+            {
+                throw new SyntaxExceptions.IdOrLitIsMissingException(getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter].Item1, lexicalAnalizator.Tokens[lexemeCounter].Item2));
+            }
+        }      
+    }
+    public class LexicalAnalizator
     {
         private List<(string, string)> typesValuesPairs;
         List<string> variables = new List<string>();
@@ -129,7 +457,7 @@ namespace CourseWork
             private set { literals = value; }
         }
         List<string> literals = new List<string>();
-        public List<(string, int)> tokens = new List<(string, int)>();
+        List<(string, int)> tokens = new List<(string, int)>();
         public List<(string, int)> Tokens
         {
             get { return tokens; }
@@ -145,7 +473,7 @@ namespace CourseWork
 
         readonly string separatorsSingle = "+-*/=,.\n()><!"; 
         readonly string[] separatorsPairs = { "++", "--", "+=", "-=", "*=", "/=", "==", "!=", ">=", "<=" };
-        public readonly string[] KeyWords = { "Dim", "as", "integer", "double", "float", "for", "to", "next" };
+        public readonly string[] KeyWords = { "Public", "Sub", "Main", "EndSub", "Dim", "as", "integer", "float", "boolean", "for", "to", "next" };
         string[] separators;
         public string[] Separators
         {
@@ -318,7 +646,7 @@ namespace CourseWork
 
         private bool CheckIsSpace(int i)
         {
-            return line[i] == ' ';
+            return (line[i] == ' ' || line[i] == '\t');
         }
         private bool CheckIsR(int i)
         {

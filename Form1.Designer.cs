@@ -39,6 +39,7 @@ namespace CourseWork
             this.dataGridViewVariables = new System.Windows.Forms.DataGridView();
             this.dataGridViewLiterals = new System.Windows.Forms.DataGridView();
             this.dataGridViewTokens = new System.Windows.Forms.DataGridView();
+            this.buttonSynytaxAnalys = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewLexeme)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewKeywords)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewSeparators)).BeginInit();
@@ -68,7 +69,7 @@ namespace CourseWork
             // 
             // ButtonLexemeAnalys
             // 
-            this.ButtonLexemeAnalys.Location = new System.Drawing.Point(159, 360);
+            this.ButtonLexemeAnalys.Location = new System.Drawing.Point(169, 360);
             this.ButtonLexemeAnalys.Name = "ButtonLexemeAnalys";
             this.ButtonLexemeAnalys.Size = new System.Drawing.Size(82, 48);
             this.ButtonLexemeAnalys.TabIndex = 2;
@@ -83,7 +84,8 @@ namespace CourseWork
             this.textBoxCode.Name = "textBoxCode";
             this.textBoxCode.Size = new System.Drawing.Size(229, 342);
             this.textBoxCode.TabIndex = 3;
-            this.textBoxCode.Text = "Dim x as integer\r\nDim i, a as integer\r\nfor i=1 to 10\r\nx=x+i*5\r\nnext for";
+            this.textBoxCode.Text = "Public Sub Main(  )\r\n\tDim x as integer\r\n\tDim i, a as boolean\r\n\tfor i=1 to 10\r\n\tx=" +
+    "i\r\n\tnext i\r\nEnd Sub";
             // 
             // dataGridViewKeywords
             // 
@@ -130,11 +132,22 @@ namespace CourseWork
             this.dataGridViewTokens.Size = new System.Drawing.Size(252, 423);
             this.dataGridViewTokens.TabIndex = 8;
             // 
+            // buttonSynytaxAnalys
+            // 
+            this.buttonSynytaxAnalys.Location = new System.Drawing.Point(81, 360);
+            this.buttonSynytaxAnalys.Name = "buttonSynytaxAnalys";
+            this.buttonSynytaxAnalys.Size = new System.Drawing.Size(82, 48);
+            this.buttonSynytaxAnalys.TabIndex = 9;
+            this.buttonSynytaxAnalys.Text = "Выполнить синтаксический анализ";
+            this.buttonSynytaxAnalys.UseVisualStyleBackColor = true;
+            this.buttonSynytaxAnalys.Click += new System.EventHandler(this.buttonSynytaxAnalys_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1273, 447);
+            this.Controls.Add(this.buttonSynytaxAnalys);
             this.Controls.Add(this.dataGridViewTokens);
             this.Controls.Add(this.dataGridViewLiterals);
             this.Controls.Add(this.dataGridViewVariables);
@@ -169,6 +182,7 @@ namespace CourseWork
         private System.Windows.Forms.DataGridView dataGridViewVariables;
         private System.Windows.Forms.DataGridView dataGridViewLiterals;
         private System.Windows.Forms.DataGridView dataGridViewTokens;
+        private System.Windows.Forms.Button buttonSynytaxAnalys;
     }
 }
 
