@@ -1,0 +1,7 @@
+0Public 1Sub 2Main3(  4)5
+	6Dim 7x 8as 9integer10
+	11Dim 12i13, 14a 15as 16integer17
+	18for 19i20=21 1 22to 23 10 24
+	25x26=27i28
+29next 30id31
+32EndSub

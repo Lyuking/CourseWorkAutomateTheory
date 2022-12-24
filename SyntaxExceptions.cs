@@ -88,10 +88,17 @@ namespace CourseWork
         {
             public EqualsOrNewLineIsMissingException(string currentValue) : base(String.Format("Ожидалость = или \\n , вместо этого обнаружено: {0}", currentValue)) { }
         }
-        public class DimForIdEndSubIsMissingException : Exception
+        public class DimForIdEndSubNextIsMissingException : Exception
         {
-            public DimForIdEndSubIsMissingException(string currentValue) : base(String.Format("Ожидалость dim/for/id/EndSub, вместо этого обнаружено: {0}", currentValue)) { }
+            public DimForIdEndSubNextIsMissingException(string currentValue) : base(String.Format("Ожидалость dim/for/id/EndSub/next, вместо этого обнаружено: {0}", currentValue)) { }
         }
-
+        public class StackIsEmptyException : Exception
+        {
+            public StackIsEmptyException(string currentValue) : base(String.Format("Не хватает операндов для выполнения указанных арифметических операций, ошибка возникла на лексеме № {0}", currentValue)) { }
+        }
+        public class StackIsNotEmptyException : Exception
+        {
+            public StackIsNotEmptyException(string currentValue) : base(String.Format("Найдено лишнее действие или число на лексеме № {0}", currentValue)) { }
+        }
     }
 }
