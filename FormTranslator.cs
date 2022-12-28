@@ -9,9 +9,9 @@ using System.Windows.Forms;
 
 namespace CourseWork
 {
-    public partial class Form1 : Form
+    public partial class FormTranslator : Form
     {
-        public Form1()
+        public FormTranslator()
         {
             InitializeComponent();
             SetupTables();
@@ -113,8 +113,8 @@ namespace CourseWork
                 if (lexicalAnalizator != null)
                 {
                     SyntaxAnalizator syntaxAnalizator = new SyntaxAnalizator(lexicalAnalizator);
-                    syntaxAnalizator.StartAnalys();
                     listBoxMatrix.Items.Clear();
+                    syntaxAnalizator.StartAnalys();                  
                     foreach (var item in syntaxAnalizator.Matrix)
                     {
                         listBoxMatrix.Items.Add(item);
@@ -127,6 +127,18 @@ namespace CourseWork
                 labelMessage.Text = DateTime.Now.ToString("HH:mm:ss") + " Ошибка. " + ex.Message;
                 MessageBox.Show(ex.Message, "Ошибка!", MessageBoxButtons.OK, MessageBoxIcon.Error);              
             }
+        }
+
+        private void resetButton_Click(object sender, EventArgs e)
+        {
+            textBoxCode.Text = @"Public Sub Main(  )
+	Dim x as integer
+	Dim i, a as boolean
+	for i=1 to 10
+	    x= i*(4+3)/a+60/(6+4)*5-12
+                next i
+EndSub
+";
         }
     }
 

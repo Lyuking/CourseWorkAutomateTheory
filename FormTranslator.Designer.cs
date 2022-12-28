@@ -1,7 +1,7 @@
 ﻿
 namespace CourseWork
 {
-    partial class Form1
+    partial class FormTranslator
     {
         /// <summary>
         /// Обязательная переменная конструктора.
@@ -41,6 +41,7 @@ namespace CourseWork
             this.buttonSynytaxAnalys = new System.Windows.Forms.Button();
             this.listBoxMatrix = new System.Windows.Forms.ListBox();
             this.labelMessage = new System.Windows.Forms.Label();
+            this.resetButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewLexeme)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewKeywords)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewSeparators)).BeginInit();
@@ -76,8 +77,8 @@ namespace CourseWork
             this.textBoxCode.Name = "textBoxCode";
             this.textBoxCode.Size = new System.Drawing.Size(239, 342);
             this.textBoxCode.TabIndex = 3;
-            this.textBoxCode.Text = "Public Sub Main(  )\r\n\tDim x as integer\r\n\tDim i, a as boolean\r\n\tfor i=1 to 10\r\n\tx=" +
-    " i*(4+3)/a+60/(6+4)*5-12\r\n                next i\r\nEndSub";
+            this.textBoxCode.Text = "Public Sub Main(  )\r\n\tDim x as integer\r\n\tDim i, a as boolean\r\n\tfor i=1 to 10\r\n\t  " +
+    "  x= i*(4+3)/a+60/(6+4)*5-12\r\n                next i\r\nEndSub";
             // 
             // dataGridViewKeywords
             // 
@@ -155,11 +156,22 @@ namespace CourseWork
             this.labelMessage.Size = new System.Drawing.Size(0, 13);
             this.labelMessage.TabIndex = 11;
             // 
-            // Form1
+            // resetButton
+            // 
+            this.resetButton.Location = new System.Drawing.Point(78, 360);
+            this.resetButton.Name = "resetButton";
+            this.resetButton.Size = new System.Drawing.Size(62, 48);
+            this.resetButton.TabIndex = 12;
+            this.resetButton.Text = "Сброс";
+            this.resetButton.UseVisualStyleBackColor = true;
+            this.resetButton.Click += new System.EventHandler(this.resetButton_Click);
+            // 
+            // FormTranslator
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1273, 699);
+            this.Controls.Add(this.resetButton);
             this.Controls.Add(this.labelMessage);
             this.Controls.Add(this.listBoxMatrix);
             this.Controls.Add(this.buttonSynytaxAnalys);
@@ -171,7 +183,7 @@ namespace CourseWork
             this.Controls.Add(this.textBoxCode);
             this.Controls.Add(this.ButtonOpenFile);
             this.Controls.Add(this.dataGridViewLexeme);
-            this.Name = "Form1";
+            this.Name = "FormTranslator";
             this.Text = "Транслятор подмножества языка VB";
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewLexeme)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewKeywords)).EndInit();
@@ -198,6 +210,7 @@ namespace CourseWork
         private System.Windows.Forms.Button buttonSynytaxAnalys;
         private System.Windows.Forms.ListBox listBoxMatrix;
         private System.Windows.Forms.Label labelMessage;
+        private System.Windows.Forms.Button resetButton;
     }
 }
 

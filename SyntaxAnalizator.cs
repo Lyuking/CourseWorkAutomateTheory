@@ -52,6 +52,7 @@ namespace CourseWork
         public bool StartAnalys()
         {
             lexemeCounter = 0;
+            matrix.Clear();
             return Progamma();
         }
         
@@ -252,6 +253,9 @@ namespace CourseWork
             if (getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter].Item1, lexicalAnalizator.Tokens[lexemeCounter].Item2) != "=")
                 throw new SyntaxExceptions.EqualIsMissingException(getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter].Item1, lexicalAnalizator.Tokens[lexemeCounter].Item2));
             IncreaseLexemeCounter(); 
+            if(getIDOrLitLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter].Item1, lexicalAnalizator.Tokens[lexemeCounter].Item2) == "undefined" && 
+                (getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter].Item1, lexicalAnalizator.Tokens[lexemeCounter].Item2) != "(" && getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter].Item1, lexicalAnalizator.Tokens[lexemeCounter].Item2) != ")"))
+                throw new SyntaxExceptions.IdOrLitIsMissingException(getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter].Item1, lexicalAnalizator.Tokens[lexemeCounter].Item2));
             List<string> tmpmatrix = Expr();
             if (tmpmatrix.Count > 0)
             {
@@ -274,6 +278,8 @@ namespace CourseWork
             Stack<string> E = new Stack<string>();
             List<string> matrix = new List<string>();
             exprCounter = 0;
+            if ((getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter].Item1, lexicalAnalizator.Tokens[lexemeCounter].Item2) == "\n"))
+                throw new Exception("Ошибка! После \"=\" Отсутствует выражение или операнд.");
             if ((getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter].Item1, lexicalAnalizator.Tokens[lexemeCounter].Item2) == "id" ||
                 getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter].Item1, lexicalAnalizator.Tokens[lexemeCounter].Item2) == "lit")
                 && getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter + 1].Item1, lexicalAnalizator.Tokens[lexemeCounter + 1].Item2) == "\n")
@@ -353,7 +359,11 @@ namespace CourseWork
                             D4(matrix, E, T);
                     }
               
-                } // else throw ex
+                } 
+                else
+                {
+                    throw new SyntaxExceptions.IdOrLitIsMissingException(getLexemeFromTokens(lexicalAnalizator.Tokens[lexemeCounter].Item1, lexicalAnalizator.Tokens[lexemeCounter].Item2));
+                }
             } while (true);
             return matrix;
         }

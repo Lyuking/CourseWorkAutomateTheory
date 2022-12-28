@@ -62,7 +62,7 @@ namespace CourseWork
         }
         public class EqualIsMissingException : Exception
         {
-            public EqualIsMissingException(string currentValue) : base(String.Format("Ожидалость =, вместо этого обнаружено: {0}", currentValue)) { }
+            public EqualIsMissingException(string currentValue) : base(String.Format("Ожидалость =, вместо этого обнаружено: \"{0}\"", currentValue)) { }
         }
         public class NextIsMissingException : Exception
         {

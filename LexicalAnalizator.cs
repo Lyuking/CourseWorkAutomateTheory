@@ -70,9 +70,9 @@ namespace CourseWork
             for (int i = 0; i < typesValuesPairs.Count; i++)
             {
 
-                if (KeyWords.Any(typesValuesPairs[i].Item1.Contains))
+                if (KeyWords.Any(typesValuesPairs[i].Item1.Equals)) //change
                     type = "Keyword";
-                else if (separators.Any(typesValuesPairs[i].Item1.Contains))
+                else if (separators.Any(typesValuesPairs[i].Item1.Equals)) //change
                     type = "Separator";
                 else if (typesValuesPairs[i].Item2 == "I")
                     type = "Variable";
